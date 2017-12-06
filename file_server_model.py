@@ -1,6 +1,7 @@
 import datetime
 import threadpool
 import time
+import os
 
 class Client:
     def __init__(self, id, socket, path_to_root):
@@ -8,6 +9,18 @@ class Client:
         self.socket = socket
         self.dir_level = 0
         self.dir_path = [path_to_root]
+    
+    def change_directory(self, dir_name):
+        self.dir_level = self.dir_level + 1
+        self.dir_path.append(dir_name)
+
+    def move_up_directory(self):
+        if self.dir_level > 0:
+            self.dir_path.pop()
+            self.dir_level = self.dir_level - 1
+            return 0
+        else:
+            return 1
 
 class FileSystemManager:
     active_clients = []
@@ -75,7 +88,19 @@ class FileSystemManager:
         self.events.append(new_event_record)
         print('%d\t%s\t%s' % (new_event_record[0], new_event_record[2], new_event_record[1]))
 
-    def log_events(self):
-        print('EID\tTIME\t\t\t\tCOMMAND')
-        for event in self.events:
-            print('%d\t%s\t%s' % (event[0], event[2], event[1]))
+    def change_directory(self, dir_name, client_id):
+        client = self.get_active_client(client_id)
+        new_dir_path = self.resolve_path(client_id, dir_name)
+        is_dir_val = os.path.isdir('./' + new_dir_path)
+        if not is_dir_val:
+            return 1
+        client.change_directory(dir_name)
+        self.update_client(client)
+        self.add_event('cd ' + dir_name)
+        return 0
+
+    def move_up_directory(self, client_id):
+        client = self.get_active_client(client_id)
+        client.move_up_directory()
+        self.update_client(client)
+        self.add_event('up')
