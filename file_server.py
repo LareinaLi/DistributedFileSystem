@@ -31,6 +31,41 @@ def start_client_interaction(connection):
                 connection.sendall(response.encode())
                 connection.close()
                 os._exit(0)
+            elif split_data[0] == 'ls':
+                if len(split_data) == 1:
+                    response = file_system_manager.list_directory_contents(client_id) + '\n'
+                    connection.sendall(response.encode())
+                elif len(split_data) == 2:
+                    response = file_system_manager.list_directory_contents(client_id, split_data[1]) + '\n'
+                    connection.sendall(response.encode())
+                else:
+                    error_response(connection, 1)
+            elif split_data[0] == 'cd':
+                if len(split_data) == 2:
+                    res = file_system_manager.change_directory(split_data[1], client_id)
+                    response = ''
+                    if res == 0:
+                        response = 'Changed directory to' + split_data[1] + '\n'
+                    elif res == 1:
+                        response = 'Directory' + split_data[1] + 'does not exist\n'
+                    connection.sendall(response.encode())
+                else:
+                    error_response(connection, 1)
+            elif split_data[0] == 'up':
+                
+            elif split_data[0] == 'read':
+                
+            elif split_data[0] == 'write':
+                
+            elif split_data[0] == 'delete':
+                
+            elif split_data[0] == 'lock':
+                
+            elif split_data[0] == 'release':
+                
+            elif split_data[0] == 'mkdir':
+                
+            elif split_data[0] == 'rmdir':
                 
             elif split_data[0] == 'exit':
                 if len(split_data) == 1:
@@ -52,3 +87,4 @@ def error_response(connection, error_code):
         
 if __name__ == '__main__':
     create_server_socket()
+    server_thread_pool.wait_completion()
