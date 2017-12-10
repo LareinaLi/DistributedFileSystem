@@ -6,6 +6,7 @@ import file_server_model
 server_thread_pool = threadpool.ThreadPool(500)
 port_number = 8080
 ip_address = socket.gethostbyname(socket.gethostname())
+# set root directory
 file_system_manager = file_server_model.FileSystemManager('FileSystemDirectory')
 
 def create_server_socket():
@@ -26,6 +27,7 @@ def start_client_interaction(connection):
             data = connection.recv(1024).decode()
             split_data = data.split('////')
 
+            # response to user input
             if data == 'KILL_SERVICE':
                 connection.sendall('Killing Service\n')
                 connection.close()
@@ -131,6 +133,7 @@ def start_client_interaction(connection):
         error_response(connection, 0)
         connection.close()
 
+# error input
 def error_response(connection, error_code):
     response = ''
     if error_code == 0:
