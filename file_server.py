@@ -52,7 +52,11 @@ def start_client_interaction(connection):
                 else:
                     error_response(connection, 1)
             elif split_data[0] == 'up':
-                
+                if len(split_data) == 1:
+                    file_system_manager.move_up_directory(client_id)
+                    connection.sendall('Have moved back to up directory\n')
+                else:
+                    error_response(connection, 1)
             elif split_data[0] == 'read':
                 
             elif split_data[0] == 'write':
