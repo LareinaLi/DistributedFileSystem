@@ -6,6 +6,7 @@ import shutil
 
 
 class Client:
+    # initialise a new client
     def __init__(self, id, socket, path_to_root):
         self.id = id
         self.socket = socket
@@ -32,6 +33,7 @@ class FileSystemManager:
     locked_files = []
     file_system_manager_threadpool = threadpool.ThreadPool(1)
 
+    # initialise File System Manager
     def __init__(self, root_path):
         self.root_path = root_path
         self.file_system_manager_threadpool.add_task(self.auto_release)
@@ -46,6 +48,7 @@ class FileSystemManager:
         self.next_event_id = self.next_event_id + 1
         return return_event_id
 
+    # function for clients
     def add_client(self, connection):
         new_client_id = self.gen_client_id()
         new_client = Client(new_client_id, connection, self.root_path)
@@ -84,6 +87,7 @@ class FileSystemManager:
         connection.close()
         self.add_event('Disconnect client: %d' % client_id)
 
+    # functions for interacting with events
     def add_event(self, command):
         new_event_id = self.gen_event_id()
         event_timestamp = datetime.datetime.now()
@@ -96,6 +100,7 @@ class FileSystemManager:
         for event in self.events:
             print('%d\t%s\t%s' % (event[0], event[2], event[1]))
 
+    # functions for directories
     def change_directory(self, dir_name, client_id):
         client = self.get_active_client(client_id)
         new_dir_path = self.resolve_path(client_id, dir_name)
@@ -118,9 +123,9 @@ class FileSystemManager:
         path = self.resolve_path(client_id, item_name)
         item_type = self.item_exists(client_id, item_name)
         if item_type == -1:
-            return 'No such directory %s' % item_name
+            return 'No such directory [' + item_name + ']'
         elif item_type == 0:
-            return 'Cannot list contents of %s' % item_name
+            return 'Cannot list contents of [' + item_name + ']'
         else:
             item_list = os.listdir('./' + path)
             return_string = 'Type\tPath'
@@ -147,6 +152,7 @@ class FileSystemManager:
             file_path = path_element + '/'
         return file_path
 
+    # functions for locking service
     def lock_item(self, client, item_name):
         file_path = self.resolve_path(client.id, item_name)
         item_type = self.item_exists(client.id, item_name)
@@ -175,9 +181,9 @@ class FileSystemManager:
                     item_released = True
             i = i + 1
         if item_released:
-            return item_name + ' released\n'
+            return '[' + item_name + '] released\n'
         else:
-            return 'You do not hold the lock for ' + item_name + '\n'
+            return 'You do not hold the lock for [' + item_name + ']\n'
 
     def check_lock(self, client, item_name):
         file_path = self.resolve_path(client.id, item_name)
@@ -197,11 +203,7 @@ class FileSystemManager:
             self.locked_files = new_locked_file_list
             self.add_event('lock auto-release')
 
-    def log_locks(self):
-        print('LID\tTIME\t\t\t\tPATH')
-        for locked_file in self.locked_files:
-            print('%d\t%s\t%s' % locked_file)
-
+    # functions for files
     def item_exists(self, client_id, item_name):
         file_path = self.resolve_path(client_id, item_name)
         is_file = os.path.isfile('./' + file_path)
@@ -217,9 +219,9 @@ class FileSystemManager:
     def read_item(self, client_id, item_name):
         item_type = self.item_exists(client_id, item_name)
         if item_type == -1:
-            return item_name + ' does not exist\n'
+            return '[' + item_name + '] does not exist\n'
         elif item_type == 1:
-            return item_name + ' is a directory\n'
+            return '[' + item_name + '] is a directory\n'
         elif item_type == 0:
             file_path = self.resolve_path(client_id, item_name)
             file = open(file_path)
@@ -264,6 +266,7 @@ class FileSystemManager:
         self.release_item(client, item_name)
         return 'Delete successfull\n'
 
+    # functions for creating and deleteing directories
     def make_directory(self, client_id, directory_name):
         path = self.resolve_path(client_id, directory_name)
         exists = self.item_exists(client_id, directory_name)
