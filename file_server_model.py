@@ -104,3 +104,11 @@ class FileSystemManager:
         client.move_up_directory()
         self.update_client(client)
         self.add_event('up')
+        
+    def resolve_path(self, client_id, item_name):
+        client = self.get_active_client(client_id)
+        file_path = ''
+        for path_element in client.dir_path:
+            file_path = file_path + path_element
+        file_path = file_path + item_name
+        return file_path
