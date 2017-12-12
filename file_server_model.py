@@ -218,6 +218,10 @@ class FileSystemManager:
 
     def read_item(self, client_id, item_name):
         item_type = self.item_exists(client_id, item_name)
+        client = self.get_active_client(client_id)
+        lock_res = self.lock_item(client, item_name)
+        if lock_res == 1:
+            return 'File locked\n'
         if item_type == -1:
             return '[' + item_name + '] does not exist\n'
         elif item_type == 1:
