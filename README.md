@@ -5,11 +5,15 @@ Student: Xuan Li
 
 Student ID: 17303493
 
-run 'file_server.py' before running 'file_client.py'
+To run this server:
+```
+python file_server.py
+python file_client.py
+```
 
 the default root directory called 'FileSystemDirectory', in the same directory of all the python files.
 
-Instrunctions:
+## Instrunctions:
 1. ls   -  list everything in the current directory
 2. cd PATH  -  change directory to PATH
 3. up   -  move up one directory
@@ -23,8 +27,8 @@ Instrunctions:
 11. pwd   -  get the path of current directory
 12. exit  -  exit the connection
 
-Components:
-1. Lock Service
-2. Caching
-3. Directory Service
-4. Distributed Transparent File Access
+## Components:
+1. Lock Service :  File be locked can not be read or wrote, and can only be relaesed by the user who lock it.
+2. Caching :  There are something wrong with this function. Some codes in 'file_server.py' are written to implement it. If I enable this function, the 'read' command cannot be used. So I changed them into comments. 
+3. Directory Service :  Can create and delete directories. Can read the path.
+4. Distributed Transparent File Access :  Can list the files and directories in the root directory. Can change root directory. Can read and write files.
