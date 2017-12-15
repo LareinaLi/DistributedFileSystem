@@ -27,8 +27,18 @@ def connect_to_server_userin():
             split_input = user_in.split(' ')
         message = '////'.join(split_input)
         sock.send(message.encode())
+        
+        # if use cache, replace these two sentences with next 8 sentences.
         if message == "exit":
             os._exit(0)
+        # cache_res = cache_interaction(sock, message)
+        # # if there is no cached response
+        # if cache_res is None:
+        #     sock.send(message.encode())
+        #     if message == "exit":
+        #         os._exit(0)
+        # else:
+        #     print(cache_res)
 
 def get_server_response(sock):
     while True:
@@ -41,6 +51,35 @@ def get_server_response(sock):
                 print(split_data[1])
             else:
                 print(data)
+
+# def cache_interaction(connection, message):
+#     global response_var
+#     split_message = message.split('////')
+#     if len(split_message) == 2 and split_message[0] == 'read':
+#         connection.send('pwd')
+#         time.sleep(1)
+#         search_term = response_var + split_message[1]
+#         return_message = search_cache(str(search_term))
+#         if return_message is not None:
+#             log_cache()
+#             print(search_term)
+#             return return_message
+#         else:
+#             return None
+#     return None
+
+
+# searches the cache for an item
+# def search_cache(path):
+#     for item in cache_queue:
+#         if item[0] == path:
+#             return item[1]
+#     return None
+
+# logs the contents of the cache
+# def log_cache():
+#     for item in cache_queue:
+#         print('%s\t%s\t%d' % item)
 
 # adds an item to the cache
 def add_to_cache(path, contents):
